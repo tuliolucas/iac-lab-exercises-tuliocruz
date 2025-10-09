@@ -1,5 +1,5 @@
-aws_region = "eu-north-1"
-prefix = "tuliocruz-iac-lab"
+aws_region   = "eu-north-1"
+prefix       = "tuliocruz-iac-lab"
 vpc_cidr     = "192.168.1.0/25"
 subnet1_cidr = "192.168.1.0/28"
 subnet2_cidr = "192.168.1.16/28"

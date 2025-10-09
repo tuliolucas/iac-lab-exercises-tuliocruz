@@ -1,9 +1,9 @@
 variable "prefix" {
   type        = string
-  description = "Prefix"
+  description = "tuliocruz-iac-lab"
 }
 
-variable "region" {
+variable "aws_region" {
   type        = string
   description = "AWS region"
 }
@@ -33,9 +33,9 @@ variable "subnet4_cidr" {
   description = "Subnet 4 CIDR block"
 }
 
-variable "subnet4_cidr" {
+variable "subnet5_cidr" {
   type        = string
-  description = "Subnet 4 CIDR block"
+  description = "Subnet 5 CIDR block"
 }
 
 variable "subnet6_cidr" {

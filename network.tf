@@ -19,7 +19,7 @@ resource "aws_subnet" "subnet1_cidr" {
 }
 
 resource "aws_subnet" "subnet2_cidr" {
-  vpc_id     = var.subnet1_cidr
+  vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet2_cidr
   availability_zone = "${var.aws_region}a"
   tags = {
@@ -61,4 +61,27 @@ resource "aws_subnet" "subnet6_cidr" {
   tags = {
     Name = format("%s-subnet-6", var.prefix)
   }
+}
+
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = format("%s-gw", var.prefix)
+  }
+}
+
+resource "aws_eip" "lb" {
+  domain   = "vpc"
+}
+
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.lb.id
+  subnet_id     = aws_subnet.subnet1_cidr.id
+  tags = {
+      Name = format("%s-nat-gateway", var.prefix)
+  }
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency
+  # on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.gw]
 }

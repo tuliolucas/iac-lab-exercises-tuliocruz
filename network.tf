@@ -74,14 +74,57 @@ resource "aws_eip" "lb" {
   domain   = "vpc"
 }
 
-resource "aws_nat_gateway" "main" {
+resource "aws_nat_gateway" "primary_nat" {
   allocation_id = aws_eip.lb.id
   subnet_id     = aws_subnet.subnet1_cidr.id
   tags = {
       Name = format("%s-nat-gateway", var.prefix)
   }
-
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.gw]
+}
+
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block        = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
+  }
+
+  tags = {
+      Name = format("%s-aws_public_route_table", var.prefix)
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block        = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.primary_nat.id
+
+  }
+  tags = {
+      Name = format("%s-aws_private_route_table", var.prefix)
+  }
+}
+
+resource "aws_route_table_association" "public_a_assoc_sn1" {
+  subnet_id      = aws_subnet.subnet1_cidr.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table_association" "public_a_assoc_sn2" {
+  subnet_id      = aws_subnet.subnet2_cidr.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table_association" "private_a_assoc_sn3" {
+  subnet_id      = aws_subnet.subnet3_cidr.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+resource "aws_route_table_association" "private_a_assoc_sn4" {
+  subnet_id      = aws_subnet.subnet4_cidr.id
+  route_table_id = aws_route_table.private_rt.id
 }

@@ -12,7 +12,8 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "subnet1_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet1_cidr
-  availability_zone = "${var.aws_region}a"
+  //availability_zone = "${var.aws_region}a"
+  availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
     Name = format("%s-subnet-1", var.prefix)
   }
@@ -21,7 +22,8 @@ resource "aws_subnet" "subnet1_cidr" {
 resource "aws_subnet" "subnet2_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet2_cidr
-  availability_zone = "${var.aws_region}a"
+  //availability_zone = "${var.aws_region}a"
+  availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
     Name = format("%s-subnet-2", var.prefix)
   }
@@ -30,7 +32,8 @@ resource "aws_subnet" "subnet2_cidr" {
 resource "aws_subnet" "subnet3_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet3_cidr
-  availability_zone = "${var.aws_region}a"
+  //availability_zone = "${var.aws_region}a"
+  availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
     Name = format("%s-subnet-3", var.prefix)
   }
@@ -39,7 +42,8 @@ resource "aws_subnet" "subnet3_cidr" {
 resource "aws_subnet" "subnet4_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet4_cidr
-  availability_zone = "${var.aws_region}b"
+  //availability_zone = "${var.aws_region}b"
+  availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
     Name = format("%s-subnet-4", var.prefix)
   }
@@ -48,7 +52,8 @@ resource "aws_subnet" "subnet4_cidr" {
 resource "aws_subnet" "subnet5_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet5_cidr
-  availability_zone = "${var.aws_region}b"
+  //availability_zone = "${var.aws_region}b"
+  availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
     Name = format("%s-subnet-5", var.prefix)
   }
@@ -57,7 +62,8 @@ resource "aws_subnet" "subnet5_cidr" {
 resource "aws_subnet" "subnet6_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet6_cidr
-  availability_zone = "${var.aws_region}b"
+  //availability_zone = "${var.aws_region}b"
+  availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
     Name = format("%s-subnet-6", var.prefix)
   }

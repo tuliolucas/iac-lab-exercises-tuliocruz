@@ -9,23 +9,14 @@ resource "aws_vpc" "main" {
   }
 }
 
+# AZ A (data.aws_availability_zones.available.names[0])
 resource "aws_subnet" "subnet1_cidr" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet1_cidr
   //availability_zone = "${var.aws_region}a"
   availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
-    Name = format("%s-subnet-1", var.prefix)
-  }
-}
-
-resource "aws_subnet" "subnet2_cidr" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet2_cidr
-  //availability_zone = "${var.aws_region}a"
-  availability_zone = data.aws_availability_zones.available.names[0]
-  tags = {
-    Name = format("%s-subnet-2", var.prefix)
+    Name = format("%s-public-subnet-1", var.prefix)
   }
 }
 
@@ -35,7 +26,29 @@ resource "aws_subnet" "subnet3_cidr" {
   //availability_zone = "${var.aws_region}a"
   availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
-    Name = format("%s-subnet-3", var.prefix)
+    Name = format("%s-private-subnet-3", var.prefix)
+  }
+}
+
+resource "aws_subnet" "subnet5_cidr" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.subnet5_cidr
+  //availability_zone = "${var.aws_region}b"
+  availability_zone = data.aws_availability_zones.available.names[0]
+  tags = {
+    Name = format("%s-secure-subnet-5", var.prefix)
+  }
+}
+
+# AZ B (data.aws_availability_zones.available.names[1])
+
+resource "aws_subnet" "subnet2_cidr" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.subnet2_cidr
+  //availability_zone = "${var.aws_region}a"
+  availability_zone = data.aws_availability_zones.available.names[1]
+  tags = {
+    Name = format("%s-public-subnet-2", var.prefix)
   }
 }
 
@@ -45,17 +58,7 @@ resource "aws_subnet" "subnet4_cidr" {
   //availability_zone = "${var.aws_region}b"
   availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
-    Name = format("%s-subnet-4", var.prefix)
-  }
-}
-
-resource "aws_subnet" "subnet5_cidr" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet5_cidr
-  //availability_zone = "${var.aws_region}b"
-  availability_zone = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = format("%s-subnet-5", var.prefix)
+    Name = format("%s-private-subnet-4", var.prefix)
   }
 }
 
@@ -65,7 +68,7 @@ resource "aws_subnet" "subnet6_cidr" {
   //availability_zone = "${var.aws_region}b"
   availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
-    Name = format("%s-subnet-6", var.prefix)
+    Name = format("%s-secure-subnet-6", var.prefix)
   }
 }
 
@@ -107,8 +110,7 @@ resource "aws_route_table" "private_rt" {
 
   route {
     cidr_block        = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.primary_nat.id
-
+    nat_gateway_id = aws_nat_gateway.primary_nat.id
   }
   tags = {
       Name = format("%s-aws_private_route_table", var.prefix)

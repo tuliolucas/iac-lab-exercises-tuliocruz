@@ -9,66 +9,34 @@ resource "aws_vpc" "main" {
   }
 }
 
-# AZ A (data.aws_availability_zones.available.names[0])
-resource "aws_subnet" "subnet1_cidr" {
+resource "aws_subnet" "public-subnet" {
+  count = var.number_of_public_subnets
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet1_cidr
-  //availability_zone = "${var.aws_region}a"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block = cidrsubnet(var.vpc_cidr, var.newbits, count.index)
+
   tags = {
-    Name = format("%s-public-subnet-1", var.prefix)
+    Name = format("%s-public-subnet-%d", var.prefix, count.index)
   }
 }
 
-resource "aws_subnet" "subnet3_cidr" {
+resource "aws_subnet" "private-subnet" {
+  count = var.number_of_private_subnets
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet3_cidr
-  //availability_zone = "${var.aws_region}a"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block = cidrsubnet(var.vpc_cidr, var.newbits, count.index + var.number_of_public_subnets)
   tags = {
-    Name = format("%s-private-subnet-3", var.prefix)
+    Name = format("%s-private-subnet-%d", var.prefix, count.index)
   }
 }
 
-resource "aws_subnet" "subnet5_cidr" {
+resource "aws_subnet" "secure-subnet" {
+  count = var.number_of_private_subnets
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet5_cidr
-  //availability_zone = "${var.aws_region}b"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block = cidrsubnet(var.vpc_cidr, var.newbits, count.index + var.number_of_public_subnets + var.number_of_private_subnets)
   tags = {
-    Name = format("%s-secure-subnet-5", var.prefix)
-  }
-}
-
-# AZ B (data.aws_availability_zones.available.names[1])
-
-resource "aws_subnet" "subnet2_cidr" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet2_cidr
-  //availability_zone = "${var.aws_region}a"
-  availability_zone = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = format("%s-public-subnet-2", var.prefix)
-  }
-}
-
-resource "aws_subnet" "subnet4_cidr" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet4_cidr
-  //availability_zone = "${var.aws_region}b"
-  availability_zone = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = format("%s-private-subnet-4", var.prefix)
-  }
-}
-
-resource "aws_subnet" "subnet6_cidr" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet6_cidr
-  //availability_zone = "${var.aws_region}b"
-  availability_zone = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = format("%s-secure-subnet-6", var.prefix)
+    Name = format("%s-secure-subnet-%d", var.prefix, count.index)
   }
 }
 
@@ -85,7 +53,7 @@ resource "aws_eip" "lb" {
 
 resource "aws_nat_gateway" "primary_nat" {
   allocation_id = aws_eip.lb.id
-  subnet_id     = aws_subnet.subnet1_cidr.id
+  subnet_id     = aws_subnet.public-subnet[0].id
   tags = {
       Name = format("%s-nat-gateway", var.prefix)
   }
@@ -117,22 +85,14 @@ resource "aws_route_table" "private_rt" {
   }
 }
 
-resource "aws_route_table_association" "public_a_assoc_sn1" {
-  subnet_id      = aws_subnet.subnet1_cidr.id
+resource "aws_route_table_association" "public_association" {
+  count = var.number_of_public_subnets
+  subnet_id      = aws_subnet.public-subnet[count.index].id
   route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_route_table_association" "public_a_assoc_sn2" {
-  subnet_id      = aws_subnet.subnet2_cidr.id
-  route_table_id = aws_route_table.public_rt.id
-}
-
-resource "aws_route_table_association" "private_a_assoc_sn3" {
-  subnet_id      = aws_subnet.subnet3_cidr.id
-  route_table_id = aws_route_table.private_rt.id
-}
-
-resource "aws_route_table_association" "private_a_assoc_sn4" {
-  subnet_id      = aws_subnet.subnet4_cidr.id
+resource "aws_route_table_association" "private_association" {
+  count = var.number_of_private_subnets
+  subnet_id      = aws_subnet.private-subnet[count.index].id
   route_table_id = aws_route_table.private_rt.id
 }

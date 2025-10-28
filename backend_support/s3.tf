@@ -1,8 +1,13 @@
 resource "aws_s3_bucket" "tfstate" {
   bucket = "${var.prefix}-tfstate"
 
+  lifecycle {
+    prevent_destroy = true
+  }
+  
   tags = {
-    Name = format("%s-tfstate", var.prefix)}
+    Name = format("%s-tfstate", var.prefix)
+  }
 }
 
 //Enable bucket versioning for the S3 bucket

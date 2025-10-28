@@ -1,0 +1,14 @@
+resource "aws_ecr_repository" "api" {
+  name                 = "${var.prefix}-api"
+  image_tag_mutability = "MUTABLE"
+   
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  force_delete = true
+
+  tags = {
+    Name = format("%s-crud-app", var.prefix)
+  }
+}

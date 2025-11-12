@@ -1,4 +1,4 @@
-output "name" {
-  value       = aws_vpc.main.id
-  description = "The Id of the VPC"
+output "vpc_id" {
+  value =  module.vpc.vpc_id
+  description = "The Id of the VPC created by the VPC module"
 }

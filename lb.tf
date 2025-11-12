@@ -1,7 +1,7 @@
 resource "aws_security_group" "lb_sg" {
     name        = "${var.prefix}-lb-sg"
     description = "Security group for the application load balancer"
-    vpc_id      = aws_vpc.main.id
+    vpc_id      = module.vpc.vpc_id
 
     ingress {
         description = "Allow HTTP from anywhere"
@@ -37,7 +37,7 @@ resource "aws_lb" "lb" {
     load_balancer_type = "application"
     internal           = false
     security_groups    = [aws_security_group.lb_sg.id]
-    subnets            = aws_subnet.public-subnet[*].id
+    subnets            = module.vpc.private_subnets
 
     tags = {
         Name = format("%s-lb-sg", var.prefix)
@@ -48,7 +48,7 @@ resource "aws_lb_target_group" "tg" {
     name        = "${var.prefix}-tg"
     port        = 8000
     protocol    = "HTTP"
-    vpc_id      = aws_vpc.main.id
+    vpc_id      = module.vpc.vpc_id
     target_type = "ip"
 
     health_check {

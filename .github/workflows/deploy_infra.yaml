@@ -33,4 +33,4 @@ jobs:
           aws sts get-caller-identity            
 
     # Can add extra steps to run Terraform to create the AWS resources
-       name: Deploy Infra
+       

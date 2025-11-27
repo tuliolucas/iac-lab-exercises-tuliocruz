@@ -1,22 +1,22 @@
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = ">= 3.0.0"
+  version = "5.5.3"
 
-  name = var.prefix
+  name = format("%s-vpc", var.prefix)
   cidr = var.vpc_cidr
 
-  azs             = slice(data.aws_availability_zones.available.names, 0, var.number_of_public_subnets)
-  public_subnets  = [for i in range(var.number_of_public_subnets) : cidrsubnet(var.vpc_cidr, var.newbits, i)]
-  private_subnets = [for i in range(var.number_of_private_subnets) : cidrsubnet(var.vpc_cidr, var.newbits, i + var.number_of_public_subnets)]
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+  azs             = ["ap-southeast-2a", "ap-southeast-2b"]
+  public_subnets  = [cidrsubnet(var.vpc_cidr, 3, 1), cidrsubnet(var.vpc_cidr, 3, 2)]
+  private_subnets = [cidrsubnet(var.vpc_cidr, 3, 3), cidrsubnet(var.vpc_cidr, 3, 4)]
+  intra_subnets   = [cidrsubnet(var.vpc_cidr, 3, 5), cidrsubnet(var.vpc_cidr, 3, 6)]
 
-  single_nat_gateway = true
   enable_nat_gateway = true
+  single_nat_gateway = true
+  enable_vpn_gateway = false
 
   tags = {
     Terraform   = "true"
-    Environment = "dev"
+    Environment = "Demo"
     Name        = var.prefix
   }
 }

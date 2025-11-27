@@ -1,5 +1,5 @@
 aws_region   = "eu-north-1"
 prefix       = "tuliocruz-iac-lab"
 vpc_cidr     = "192.168.1.0/25"
-db_name = "iac-tlsc-database"
+db_name = "tlscdatabase"
 db_username = "admin"

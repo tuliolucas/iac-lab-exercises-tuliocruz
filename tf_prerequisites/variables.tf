@@ -13,6 +13,6 @@ variable "aws_region" {
 variable "repo_name" {
   type        = string
   description = "GitHub repository name"
-  default = "tuliolucas/infra-as-code-assignment-tuliocruz"
+  default = "tuliolucas/iac-lab-exercises-tuliocruz"
 }
 
